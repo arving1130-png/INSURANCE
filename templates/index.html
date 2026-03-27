@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CGIG Customer Support</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="logo-group">
+        <div class="logo-icon">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+            <rect width="32" height="32" rx="8" fill="#1a4f8a"/>
+            <path d="M16 4L6 9v8c0 5.25 4.25 10.15 10 11.35C21.75 27.15 26 22.25 26 17V9L16 4z" fill="white" fill-opacity="0.9"/>
+            <path d="M13 16.5l2.5 2.5 5-5" stroke="#1a4f8a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div>
+          <div class="logo-name">Commercial General Insurance Group</div>
+          <div class="logo-tagline">Protecting What Matters Most</div>
+        </div>
+      </div>
+      <div class="header-contact">
+        <span>24/7 Claims:</span>
+        <strong>1-800-CGIG-CLAIM</strong>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main layout -->
+  <main class="main">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <h3 class="sidebar-title">Quick Topics</h3>
+      <ul class="quick-links">
+        <li><button class="quick-btn" data-msg="I'd like to file a new claim. What information do I need?">File a Claim</button></li>
+        <li><button class="quick-btn" data-msg="Can you explain what Commercial General Liability insurance covers?">CGL Coverage</button></li>
+        <li><button class="quick-btn" data-msg="I need a Certificate of Insurance. How do I request one?">Certificate of Insurance</button></li>
+        <li><button class="quick-btn" data-msg="How do I make a payment or set up a payment plan?">Billing & Payments</button></li>
+        <li><button class="quick-btn" data-msg="I need to make changes to my existing policy.">Policy Changes</button></li>
+        <li><button class="quick-btn" data-msg="My policy is coming up for renewal. What do I need to know?">Policy Renewal</button></li>
+        <li><button class="quick-btn" data-msg="What workers' compensation coverage options do you offer?">Workers' Comp</button></li>
+        <li><button class="quick-btn" data-msg="What are your business hours and how can I reach a live agent?">Contact & Hours</button></li>
+      </ul>
+
+      <div class="sidebar-contact">
+        <h4>Need Immediate Help?</h4>
+        <p><strong>Claims Hotline</strong><br/>1-800-CGIG-CLAIM<br/><em>Available 24/7</em></p>
+        <p><strong>Customer Service</strong><br/>Mon–Fri, 8am–6pm EST</p>
+        <p><strong>Email</strong><br/>support@cgig.com</p>
+      </div>
+    </aside>
+
+    <!-- Chat area -->
+    <section class="chat-section">
+      <div class="chat-header">
+        <div class="agent-avatar">A</div>
+        <div class="agent-info">
+          <div class="agent-name">Alex &mdash; CGIG Virtual Assistant</div>
+          <div class="agent-status"><span class="status-dot"></span> Online</div>
+        </div>
+      </div>
+
+      <div class="chat-messages" id="chatMessages">
+        <!-- Welcome message -->
+        <div class="message message-bot">
+          <div class="message-avatar">A</div>
+          <div class="message-bubble">
+            <p>Hello! Welcome to <strong>Commercial General Insurance Group</strong>. I'm Alex, your virtual customer service representative.</p>
+            <p>I'm here to help you with policy questions, claims, billing, certificates of insurance, and much more. How can I assist you today?</p>
+          </div>
+          <div class="message-time" id="welcomeTime"></div>
+        </div>
+      </div>
+
+      <div class="typing-indicator" id="typingIndicator">
+        <div class="message-avatar">A</div>
+        <div class="typing-dots">
+          <span></span><span></span><span></span>
+        </div>
+      </div>
+
+      <form class="chat-input-form" id="chatForm">
+        <textarea
+          id="userInput"
+          class="chat-input"
+          placeholder="Type your message here..."
+          rows="1"
+          maxlength="2000"
+        ></textarea>
+        <button type="submit" class="send-btn" id="sendBtn" aria-label="Send message">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <path d="M22 2L11 13" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </form>
+      <div class="input-hint">Press Enter to send &middot; Shift+Enter for new line</div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>&copy; 2024 Commercial General Insurance Group &mdash; AI assistant is for informational purposes only. For binding coverage decisions, contact a licensed agent.</p>
+  </footer>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
