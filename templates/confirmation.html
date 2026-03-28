@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Application Submitted — CGIG</title>
+  <link rel="stylesheet" href="/static/style.css" />
+  <link rel="stylesheet" href="/static/application.css" />
+</head>
+<body>
+<header class="header">
+  <div class="header-inner">
+    <div class="logo-group">
+      <div class="logo-icon">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+          <rect width="32" height="32" rx="8" fill="#1a4f8a"/>
+          <path d="M16 4L6 9v8c0 5.25 4.25 10.15 10 11.35C21.75 27.15 26 22.25 26 17V9L16 4z" fill="white" fill-opacity="0.9"/>
+          <path d="M13 16.5l2.5 2.5 5-5" stroke="#1a4f8a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div>
+        <div class="logo-name">Commercial General Insurance Group</div>
+        <div class="logo-tagline">Protecting What Matters Most</div>
+      </div>
+    </div>
+    <a href="/" class="header-back">← Back to Support Chat</a>
+  </div>
+</header>
+
+<div style="max-width:680px; margin:60px auto; padding:0 16px; text-align:center;">
+  <div class="confirm-icon">
+    <svg width="64" height="64" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="11" fill="#dcfce7" stroke="#22c55e" stroke-width="1.5"/>
+      <path d="M7 12.5l3.5 3.5 6.5-7" stroke="#16a34a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
+  <h1 style="font-size:1.9rem; font-weight:700; color:var(--brand-blue); margin:16px 0 8px;">Application Received!</h1>
+  <p style="color:var(--text-muted); font-size:1rem; margin-bottom:32px;">
+    Thank you, <strong>{{ form.get('legal_name', 'Applicant') }}</strong>. Your CGL insurance application has been successfully submitted to Commercial General Insurance Group.
+  </p>
+
+  <div class="confirm-card">
+    <div class="confirm-row"><span>Reference #</span><strong>CGIG-{{ range(100000,999999)|random if range is defined else '287451' }}</strong></div>
+    <div class="confirm-row"><span>Applicant</span><strong>{{ form.get('legal_name', '—') }}</strong></div>
+    <div class="confirm-row"><span>Contact</span><strong>{{ form.get('contact_name', '—') }}</strong></div>
+    <div class="confirm-row"><span>Email</span><strong>{{ form.get('email', '—') }}</strong></div>
+    <div class="confirm-row"><span>Desired Effective</span><strong>{{ form.get('desired_effective', '—') }}</strong></div>
+    <div class="confirm-row"><span>Coverage Requested</span><strong>CGL — {{ form.get('per_occurrence', '—') }} per occurrence</strong></div>
+  </div>
+
+  <div class="confirm-next">
+    <h3>What Happens Next?</h3>
+    <ol>
+      <li>A licensed underwriter will review your application within <strong>2 business days</strong>.</li>
+      <li>You may be contacted at <strong>{{ form.get('email', 'the email provided') }}</strong> for additional information or documentation.</li>
+      <li>Once approved, you will receive a formal quote with final premium and policy terms.</li>
+      <li>Coverage binds upon your written acceptance and initial premium payment.</li>
+    </ol>
+  </div>
+
+  <div style="margin-top:32px; display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
+    <a href="/apply" class="btn btn-outline">Submit Another Application</a>
+    <a href="/" class="btn btn-primary">Chat with Alex</a>
+  </div>
+  <p style="margin-top:20px; font-size:.8rem; color:var(--text-muted);">Questions? Call <strong>1-800-CGIG-CLAIM</strong> or email <strong>underwriting@cgig.com</strong></p>
+</div>
+
+<footer class="footer">
+  <p>&copy; 2024 Commercial General Insurance Group</p>
+</footer>
+</body>
+</html>

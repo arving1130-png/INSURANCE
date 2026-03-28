@@ -82,6 +82,23 @@ html, body {
   flex-direction: column;
   gap: 16px;
 }
+.apply-cta-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--accent);
+  color: white;
+  text-decoration: none;
+  padding: 11px 14px;
+  border-radius: 8px;
+  font-size: .88rem;
+  font-weight: 700;
+  transition: background .15s, transform .1s;
+  text-align: center;
+  justify-content: center;
+}
+.apply-cta-btn:hover { background: var(--accent-hover); transform: translateY(-1px); }
+
 .sidebar-title {
   font-size: .75rem;
   font-weight: 700;

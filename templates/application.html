@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CGL Insurance Application — CGIG</title>
+  <link rel="stylesheet" href="/static/style.css" />
+  <link rel="stylesheet" href="/static/application.css" />
+</head>
+<body>
+
+<!-- Header -->
+<header class="header">
+  <div class="header-inner">
+    <div class="logo-group">
+      <div class="logo-icon">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+          <rect width="32" height="32" rx="8" fill="#1a4f8a"/>
+          <path d="M16 4L6 9v8c0 5.25 4.25 10.15 10 11.35C21.75 27.15 26 22.25 26 17V9L16 4z" fill="white" fill-opacity="0.9"/>
+          <path d="M13 16.5l2.5 2.5 5-5" stroke="#1a4f8a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div>
+        <div class="logo-name">Commercial General Insurance Group</div>
+        <div class="logo-tagline">Protecting What Matters Most</div>
+      </div>
+    </div>
+    <a href="/" class="header-back">← Back to Support Chat</a>
+  </div>
+</header>
+
+<!-- Page heading -->
+<div class="app-hero">
+  <div class="app-hero-inner">
+    <div class="app-hero-badge">Commercial General Liability</div>
+    <h1 class="app-hero-title">CGL Insurance Application</h1>
+    <p class="app-hero-sub">Complete all sections below. A licensed underwriter will review your application and contact you within 2 business days.</p>
+  </div>
+</div>
+
+<!-- Progress bar -->
+<div class="progress-wrapper">
+  <div class="progress-bar-outer">
+    <div class="progress-bar-inner" id="progressBar"></div>
+  </div>
+  <div class="step-labels">
+    <span class="step-label active" data-step="1">1. Business Info</span>
+    <span class="step-label" data-step="2">2. Operations</span>
+    <span class="step-label" data-step="3">3. Coverage</span>
+    <span class="step-label" data-step="4">4. Loss History</span>
+    <span class="step-label" data-step="5">5. Review &amp; Submit</span>
+  </div>
+</div>
+
+<form class="app-form" id="appForm" action="/apply/submit" method="POST" novalidate>
+
+  <!-- ═══════════════════════════════════════════════════
+       STEP 1 — Business Information
+  ══════════════════════════════════════════════════════ -->
+  <section class="form-step active" id="step1">
+    <div class="step-card">
+      <div class="step-card-header">
+        <div class="step-num">1</div>
+        <div>
+          <h2 class="step-title">Business Information</h2>
+          <p class="step-desc">Legal and contact details for the insured entity.</p>
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="field full">
+          <label class="field-label required" for="legal_name">Legal Business Name</label>
+          <input type="text" id="legal_name" name="legal_name" class="field-input" placeholder="As registered with the state" required />
+        </div>
+        <div class="field full">
+          <label class="field-label" for="dba">DBA / Trade Name (if different)</label>
+          <input type="text" id="dba" name="dba" class="field-input" placeholder="Doing Business As" />
+        </div>
+
+        <div class="field-group-label">Primary Business Address</div>
+        <div class="field full">
+          <label class="field-label required" for="street">Street Address</label>
+          <input type="text" id="street" name="street" class="field-input" placeholder="123 Main Street, Suite 100" required />
+        </div>
+        <div class="field">
+          <label class="field-label required" for="city">City</label>
+          <input type="text" id="city" name="city" class="field-input" required />
+        </div>
+        <div class="field half">
+          <label class="field-label required" for="state">State</label>
+          <select id="state" name="state" class="field-input field-select" required>
+            <option value="">— Select —</option>
+            <option>AL</option><option>AK</option><option>AZ</option><option>AR</option>
+            <option>CA</option><option>CO</option><option>CT</option><option>DE</option>
+            <option>FL</option><option>GA</option><option>HI</option><option>ID</option>
+            <option>IL</option><option>IN</option><option>IA</option><option>KS</option>
+            <option>KY</option><option>LA</option><option>ME</option><option>MD</option>
+            <option>MA</option><option>MI</option><option>MN</option><option>MS</option>
+            <option>MO</option><option>MT</option><option>NE</option><option>NV</option>
+            <option>NH</option><option>NJ</option><option>NM</option><option>NY</option>
+            <option>NC</option><option>ND</option><option>OH</option><option>OK</option>
+            <option>OR</option><option>PA</option><option>RI</option><option>SC</option>
+            <option>SD</option><option>TN</option><option>TX</option><option>UT</option>
+            <option>VT</option><option>VA</option><option>WA</option><option>WV</option>
+            <option>WI</option><option>WY</option><option>DC</option>
+          </select>
+        </div>
+        <div class="field half">
+          <label class="field-label required" for="zip">ZIP Code</label>
+          <input type="text" id="zip" name="zip" class="field-input" placeholder="00000" maxlength="10" required />
+        </div>
+
+        <div class="field-group-label">Contact Information</div>
+        <div class="field">
+          <label class="field-label required" for="contact_name">Primary Contact Name</label>
+          <input type="text" id="contact_name" name="contact_name" class="field-input" required />
+        </div>
+        <div class="field">
+          <label class="field-label required" for="contact_title">Title / Role</label>
+          <input type="text" id="contact_title" name="contact_title" class="field-input" placeholder="e.g., Owner, CFO, Risk Manager" required />
+        </div>
+        <div class="field">
+          <label class="field-label required" for="phone">Phone Number</label>
+          <input type="tel" id="phone" name="phone" class="field-input" placeholder="(555) 555-5555" required />
+        </div>
+        <div class="field">
+          <label class="field-label required" for="email">Email Address</label>
+          <input type="email" id="email" name="email" class="field-input" placeholder="contact@yourbusiness.com" required />
+        </div>
+        <div class="field full">
+          <label class="field-label" for="website">Website</label>
+          <input type="url" id="website" name="website" class="field-input" placeholder="https://www.yourbusiness.com" />
+        </div>
+
+        <div class="field-group-label">Business Details</div>
+        <div class="field">
+          <label class="field-label required" for="entity_type">Business Entity Type</label>
+          <select id="entity_type" name="entity_type" class="field-input field-select" required>
+            <option value="">— Select —</option>
+            <option>Sole Proprietorship</option>
+            <option>Partnership</option>
+            <option>LLC</option>
+            <option>S-Corporation</option>
+            <option>C-Corporation</option>
+            <option>Non-Profit / 501(c)(3)</option>
+            <option>Government / Public Entity</option>
+            <option>Joint Venture</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="field-label required" for="years_in_business">Years in Business</label>
+          <select id="years_in_business" name="years_in_business" class="field-input field-select" required>
+            <option value="">— Select —</option>
+            <option>Less than 1 year</option>
+            <option>1–2 years</option>
+            <option>3–5 years</option>
+            <option>6–10 years</option>
+            <option>11–20 years</option>
+            <option>More than 20 years</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="field-label" for="fein">Federal Employer ID (FEIN)</label>
+          <input type="text" id="fein" name="fein" class="field-input" placeholder="XX-XXXXXXX" maxlength="10" />
+        </div>
+        <div class="field">
+          <label class="field-label required" for="desired_effective">Desired Effective Date</label>
+          <input type="date" id="desired_effective" name="desired_effective" class="field-input" required />
+        </div>
+      </div>
+    </div>
+
+    <div class="step-nav">
+      <span></span>
+      <button type="button" class="btn btn-primary" onclick="nextStep(1)">Next: Operations &rarr;</button>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════
+       STEP 2 — Business Operations
+  ══════════════════════════════════════════════════════ -->
+  <section class="form-step" id="step2">
+    <div class="step-card">
+      <div class="step-card-header">
+        <div class="step-num">2</div>
+        <div>
+          <h2 class="step-title">Business Operations</h2>
+          <p class="step-desc">Describe what your business does and its scale.</p>
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="field full">
+          <label class="field-label required" for="operations_desc">Description of Operations</label>
+          <textarea id="operations_desc" name="operations_desc" class="field-input field-textarea" rows="4"
+            placeholder="Describe in detail the nature of your business, products sold, services provided, and any activities that may create liability exposure." required></textarea>
+        </div>
+
+        <div class="field">
+          <label class="field-label required" for="industry">Industry / Business Class</label>
+          <select id="industry" name="industry" class="field-input field-select" required>
+            <option value="">— Select —</option>
+            <optgroup label="Contractors">
+              <option>General Contractor</option>
+              <option>Electrical Contractor</option>
+              <option>Plumbing Contractor</option>
+              <option>HVAC Contractor</option>
+              <option>Roofing Contractor</option>
+              <option>Painting Contractor</option>
+              <option>Landscaping / Lawn Care</option>
+              <option>Janitorial / Cleaning Services</option>
+            </optgroup>
+            <optgroup label="Retail &amp; Wholesale">
+              <option>Retail Store</option>
+              <option>Wholesale / Distributor</option>
+              <option>Auto Dealer / Repair</option>
+              <option>Restaurant / Food Service</option>
+              <option>Grocery / Convenience Store</option>
+            </optgroup>
+            <optgroup label="Professional Services">
+              <option>Consulting / Advisory</option>
+              <option>Real Estate</option>
+              <option>Accounting / Financial</option>
+              <option>Legal Services</option>
+              <option>Marketing / Advertising</option>
+              <option>IT / Technology Services</option>
+            </optgroup>
+            <optgroup label="Healthcare &amp; Social">
+              <option>Medical / Dental Office</option>
+              <option>Home Health / Personal Care</option>
+              <option>Childcare / Day Care</option>
+              <option>Social Services / Non-Profit</option>
+            </optgroup>
+            <optgroup label="Manufacturing &amp; Industrial">
+              <option>Light Manufacturing</option>
+              <option>Heavy Manufacturing</option>
+              <option>Warehousing / Storage</option>
+              <option>Transportation / Trucking</option>
+            </optgroup>
+            <optgroup label="Hospitality &amp; Entertainment">
+              <option>Hotel / Motel</option>
+              <option>Bar / Tavern / Nightclub</option>
+              <option>Event Venue / Catering</option>
+              <option>Fitness / Recreation</option>
+            </optgroup>
+            <option>Other (describe in operations)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="field-label" for="sic_code">SIC / NAICS Code (if known)</label>
+          <input type="text" id="sic_code" name="sic_code" class="field-input" placeholder="e.g., 1731" maxlength="10" />
+        </div>
+
+        <div class="field-group-label">Workforce &amp; Revenue</div>
+        <div class="field">
+          <label class="field-label required" for="full_time_employees">Full-Time Employees</label>
+          <input type="number" id="full_time_employees" name="full_time_employees" class="field-input" min="0" placeholder="0" required />
+        </div>
+        <div class="field">
+          <label class="field-label" for="part_time_employees">Part-Time / Seasonal Employees</label>
+          <input type="number" id="part_time_employees" name="part_time_employees" class="field-input" min="0" placeholder="0" />
+        </div>
+        <div class="field">
+          <label class="field-label required" for="annual_revenue">Estimated Annual Revenue</label>
+          <select id="annual_revenue" name="annual_revenue" class="field-input field-select" required>
+            <option value="">— Select —</option>
+            <option>Under $100,000</option>
+            <option>$100,000 – $250,000</option>
+            <option>$250,001 – $500,000</option>
+            <option>$500,001 – $1,000,000</option>
+            <option>$1,000,001 – $2,500,000</option>
+            <option>$2,500,001 – $5,000,000</option>
+            <option>$5,000,001 – $10,000,000</option>
+            <option>Over $10,000,000</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="field-label" for="annual_payroll">Estimated Annual Payroll</label>
+          <select id="annual_payroll" name="annual_payroll" class="field-input field-select">
+            <option value="">— Select —</option>
+            <option>Under $100,000</option>
+            <option>$100,000 – $250,000</option>
+            <option>$250,001 – $500,000</option>
+            <option>$500,001 – $1,000,000</option>
+            <option>$1,000,001 – $2,500,000</option>
+            <option>Over $2,500,000</option>
+          </select>
+        </div>
+
+        <div class="field-group-label">Premises</div>
+        <div class="field">
+          <label class="field-label" for="sq_footage">Premises Square Footage</label>
+          <input type="number" id="sq_footage" name="sq_footage" class="field-input" min="0" placeholder="e.g., 2500" />
+        </div>
+        <div class="field">
+          <label class="field-label required" for="premises_ownership">Premises Ownership</label>
+          <select id="premises_ownership" name="premises_ownership" class="field-input field-select" required>
+            <option value="">— Select —</option>
+            <option>Owned</option>
+            <option>Leased / Rented</option>
+            <option>Home-Based</option>
+            <option>No Fixed Location</option>
+            <option>Multiple Locations</option>
+          </select>
+        </div>
+
+        <div class="field-group-label">Additional Operations Questions</div>
+
+        <div class="field full">
+          <label class="field-label required">Does your business perform work at customer / third-party locations?</label>
+          <div class="radio-group">
+            <label class="radio-label"><input type="radio" name="work_offsite" value="Yes" required /> Yes</label>
+            <label class="radio-label"><input type="radio" name="work_offsite" value="No" /> No</label>
+          </div>
+        </div>
+
+        <div class="field full">
+          <label class="field-label required">Does your business manufacture, distribute, or sell physical products?</label>
+          <div class="radio-group">
+            <label class="radio-label"><input type="radio" name="sells_products" value="Yes" required /> Yes</label>
+            <label class="radio-label"><input type="radio" name="sells_products" value="No" /> No</label>
+          </div>
+        </div>
+
+        <div class="field full products-detail" id="productsDetail" style="display:none;">
+          <label class="field-label" for="products_desc">Describe Products Sold / Manufactured</label>
+          <textarea id="products_desc" name="products_desc" class="field-input field-textarea" rows="3"
+            placeholder="List products, where they're sold, and approximate annual product revenue."></textarea>
+        </div>
+
+        <div class="field full">
+          <label class="field-label required">Does your business operate vehicles as part of operations? (Delivery, transport, etc.)</label>
+          <div class="radio-group">
+            <label class="radio-label"><input type="radio" name="uses_vehicles" value="Yes" required /> Yes</label>
+            <label class="radio-label"><input type="radio" name="uses_vehicles" value="No" /> No</label>
+          </div>
+        </div>
+
+        <div class="field full">
+          <label class="field-label required">Does your business handle, store, or dispose of hazardous materials?</label>
+          <div class="radio-group">
+            <label class="radio-label"><input type="radio" name="hazmat" value="Yes" required /> Yes</label>
+            <label class="radio-label"><input type="radio" name="hazmat" value="No" /> No</label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step-nav">
+      <button type="button" class="btn btn-outline" onclick="prevStep(2)">&larr; Previous</button>
+      <button type="button" class="btn btn-primary" onclick="nextStep(2)">Next: Coverage &rarr;</button>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════
+       STEP 3 — Coverage Requirements
+  ══════════════════════════════════════════════════════ -->
+  <section class="form-step" id="step3">
+    <div class="step-card">
+      <div class="step-card-header">
+        <div class="step-num">3</div>
+        <div>
+          <h2 class="step-title">Coverage Requirements</h2>
+          <p class="step-desc">Select the limits and coverage options you need.</p>
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="field-group-label">CGL Limits of Liability</div>
+
+        <div class="coverage-info-box">
+          <strong>Coverage A — Bodily Injury &amp; Property Damage</strong> protects against third-party claims for physical injury or property damage caused by your operations.<br/>
+          <strong>Coverage B — Personal &amp; Advertising Injury</strong> covers libel, slander, copyright infringement, and similar offenses.<br/>
+          <strong>Coverage C — Medical Payments</strong> pays minor medical costs regardless of fault.
+        </div>
+
+        <div class="field">
+          <label class="field-label required" for="per_occurrence">Each Occurrence Limit</label>
+          <select id="per_occurrence" name="per_occurrence" class="field-input field-select" required>
+            <option value="">— Select —</option>
+            <option>$300,000</option>
+            <option>$500,000</option>
+            <option>$1,000,000</option>
+            <option>$2,000,000</option>
+            <option>$3,000,000</option>
+            <option>$5,000,000</option>
+            <option>$10,000,000+</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="field-label required" for="general_aggregate">General Aggregate Limit</label>
+          <select id="general_aggregate" name="general_aggregate" class="field-input field-select" required>
+            <option value="">— Select —</option>
+            <option>$600,000</option>
+            <option>$1,000,000</option>
+            <option>$2,000,000</option>
+            <option>$4,000,000</option>
+            <option>$6,000,000</option>
+            <option>$10,000,000</option>
+            <option>$20,000,000+</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="field-label required" for="products_completed_ops">Products &amp; Completed Operations Aggregate</label>
+          <select id="products_completed_ops" name="products_completed_ops" class="field-input field-select" required>
+            <option value="">— Select —</option>
+            <option>$600,000</option>
+            <option>$1,000,000</option>
+            <option>$2,000,000</option>
+            <option>$4,000,000</option>
+            <option>$10,000,000+</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="field-label" for="personal_adv_injury">Personal &amp; Advertising Injury Limit</label>
+          <select id="personal_adv_injury" name="personal_adv_injury" class="field-input field-select">
+            <option value="">— Same as Per Occurrence —</option>
+            <option>$300,000</option>
+            <option>$500,000</option>
+            <option>$1,000,000</option>
+            <option>$2,000,000</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="field-label" for="medical_payments">Medical Payments Limit</label>
+          <select id="medical_payments" name="medical_payments" class="field-input field-select">
+            <option value="">— Select —</option>
+            <option>$5,000 per person</option>
+            <option>$10,000 per person</option>
+            <option>$25,000 per person</option>
+            <option>$50,000 per person</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="field-label" for="deductible">Deductible Preference</label>
+          <select id="deductible" name="deductible" class="field-input field-select">
+            <option value="">— Select —</option>
+            <option>None (first-dollar coverage)</option>
+            <option>$500</option>
+            <option>$1,000</option>
+            <option>$2,500</option>
+            <option>$5,000</option>
+            <option>$10,000</option>
+            <option>$25,000</option>
+          </select>
+        </div>
+
+        <div class="field-group-label">Additional Coverages</div>
+
+        <div class="field full">
+          <label class="field-label">Select any additional coverages needed:</label>
+          <div class="checkbox-grid">
+            <label class="checkbox-label">
+              <input type="checkbox" name="additional_coverages" value="Hired &amp; Non-Owned Auto" />
+              Hired &amp; Non-Owned Auto Liability
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" name="additional_coverages" value="Employment Practices Liability" />
+              Employment Practices Liability (EPLI)
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" name="additional_coverages" value="Liquor Liability" />
+              Liquor Liability
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" name="additional_coverages" value="Contractors Pollution Liability" />
+              Contractors Pollution Liability
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" name="additional_coverages" value="Employee Benefits Liability" />
+              Employee Benefits Liability
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" name="additional_coverages" value="Stop Gap / Employers Liability" />
+              Stop Gap / Employers Liability
+            </label>
+          </div>
+        </div>
+
+        <div class="field-group-label">Additional Insureds</div>
+        <div class="field full">
+          <label class="field-label required">Are additional insureds required (e.g., by contract)?</label>
+          <div class="radio-group">
+            <label class="radio-label"><input type="radio" name="has_additional_insureds" value="Yes" id="aiYes" required /> Yes</label>
+            <label class="radio-label"><input type="radio" name="has_additional_insureds" value="No" id="aiNo" /> No</label>
+          </div>
+        </div>
+        <div class="field full ai-detail" id="aiDetail" style="display:none;">
+          <label class="field-label" for="additional_insureds_list">List Additional Insured(s) (name and relationship)</label>
+          <textarea id="additional_insureds_list" name="additional_insureds_list" class="field-input field-textarea" rows="3"
+            placeholder="e.g., ABC Property Management LLC — Landlord&#10;XYZ Municipality — Contract Requirement"></textarea>
+        </div>
+
+        <div class="field-group-label">Prior Insurance</div>
+        <div class="field full">
+          <label class="field-label required">Does the business currently carry or has it previously carried CGL insurance?</label>
+          <div class="radio-group">
+            <label class="radio-label"><input type="radio" name="has_prior_insurance" value="Yes" id="priorYes" required /> Yes</label>
+            <label class="radio-label"><input type="radio" name="has_prior_insurance" value="No" id="priorNo" /> No / First-time applicant</label>
+          </div>
+        </div>
+        <div class="prior-detail" id="priorDetail" style="display:none;">
+          <div class="form-grid">
+            <div class="field">
+              <label class="field-label" for="prior_carrier">Current / Prior Carrier</label>
+              <input type="text" id="prior_carrier" name="prior_carrier" class="field-input" placeholder="Insurer name" />
+            </div>
+            <div class="field">
+              <label class="field-label" for="prior_policy_number">Policy Number</label>
+              <input type="text" id="prior_policy_number" name="prior_policy_number" class="field-input" placeholder="Policy # (if available)" />
+            </div>
+            <div class="field">
+              <label class="field-label" for="prior_expiration">Current Policy Expiration</label>
+              <input type="date" id="prior_expiration" name="prior_expiration" class="field-input" />
+            </div>
+            <div class="field">
+              <label class="field-label" for="prior_premium">Approximate Annual Premium</label>
+              <input type="text" id="prior_premium" name="prior_premium" class="field-input" placeholder="e.g., $2,400" />
+            </div>
+            <div class="field full">
+              <label class="field-label" for="non_renewal_reason">Reason for Seeking New Coverage</label>
+              <select id="non_renewal_reason" name="non_renewal_reason" class="field-input field-select">
+                <option value="">— Select —</option>
+                <option>Better pricing</option>
+                <option>Better coverage terms</option>
+                <option>Non-renewed by carrier</option>
+                <option>Cancelled by carrier</option>
+                <option>Carrier exiting market</option>
+                <option>Other</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step-nav">
+      <button type="button" class="btn btn-outline" onclick="prevStep(3)">&larr; Previous</button>
+      <button type="button" class="btn btn-primary" onclick="nextStep(3)">Next: Loss History &rarr;</button>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════
+       STEP 4 — Loss History
+  ══════════════════════════════════════════════════════ -->
+  <section class="form-step" id="step4">
+    <div class="step-card">
+      <div class="step-card-header">
+        <div class="step-num">4</div>
+        <div>
+          <h2 class="step-title">Loss History</h2>
+          <p class="step-desc">Report all claims, incidents, and legal actions in the past 5 years.</p>
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="field full">
+          <label class="field-label required">Has the business had any liability claims, lawsuits, or incidents in the past 5 years?</label>
+          <div class="radio-group">
+            <label class="radio-label"><input type="radio" name="has_claims" value="Yes" id="claimsYes" required /> Yes</label>
+            <label class="radio-label"><input type="radio" name="has_claims" value="No" id="claimsNo" /> No</label>
+          </div>
+        </div>
+
+        <div class="field full claims-detail" id="claimsDetail" style="display:none;">
+          <label class="field-label" for="claims_description">Describe Each Claim / Incident</label>
+          <textarea id="claims_description" name="claims_description" class="field-input field-textarea" rows="5"
+            placeholder="For each claim, provide:&#10;• Date of loss&#10;• Type of claim (bodily injury, property damage, etc.)&#10;• Amount paid or reserved&#10;• Current status (open / closed)&#10;• Brief description of circumstances"></textarea>
+          <p class="field-hint">Attach loss runs (5-year history) when submitting supporting documents.</p>
+        </div>
+
+        <div class="field full">
+          <label class="field-label required">Has the business ever been cancelled or non-renewed for insurance due to claims, misrepresentation, or non-payment?</label>
+          <div class="radio-group">
+            <label class="radio-label"><input type="radio" name="was_cancelled" value="Yes" id="cancelYes" required /> Yes</label>
+            <label class="radio-label"><input type="radio" name="was_cancelled" value="No" id="cancelNo" /> No</label>
+          </div>
+        </div>
+
+        <div class="field full cancel-detail" id="cancelDetail" style="display:none;">
+          <label class="field-label" for="cancellation_explanation">Explain Cancellation / Non-Renewal</label>
+          <textarea id="cancellation_explanation" name="cancellation_explanation" class="field-input field-textarea" rows="3"
+            placeholder="Provide carrier name, policy period, and reason for cancellation."></textarea>
+        </div>
+
+        <div class="field full">
+          <label class="field-label required">Is the business currently aware of any circumstances that may give rise to a future claim?</label>
+          <div class="radio-group">
+            <label class="radio-label"><input type="radio" name="pending_incidents" value="Yes" id="pendingYes" required /> Yes</label>
+            <label class="radio-label"><input type="radio" name="pending_incidents" value="No" id="pendingNo" /> No</label>
+          </div>
+        </div>
+
+        <div class="field full pending-detail" id="pendingDetail" style="display:none;">
+          <label class="field-label" for="pending_description">Describe Known / Potential Incidents</label>
+          <textarea id="pending_description" name="pending_description" class="field-input field-textarea" rows="3"
+            placeholder="Describe any known incidents, complaints, or circumstances that may result in a claim."></textarea>
+        </div>
+
+        <div class="loss-summary-box">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="10" stroke="#1a4f8a" stroke-width="2"/>
+            <path d="M12 8v4m0 4h.01" stroke="#1a4f8a" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <span>All information provided is subject to verification. Intentional misrepresentation may void coverage and result in policy rescission.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="step-nav">
+      <button type="button" class="btn btn-outline" onclick="prevStep(4)">&larr; Previous</button>
+      <button type="button" class="btn btn-primary" onclick="nextStep(4)">Next: Review &amp; Submit &rarr;</button>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════
+       STEP 5 — Review & Submit
+  ══════════════════════════════════════════════════════ -->
+  <section class="form-step" id="step5">
+    <div class="step-card">
+      <div class="step-card-header">
+        <div class="step-num">5</div>
+        <div>
+          <h2 class="step-title">Review &amp; Submit</h2>
+          <p class="step-desc">Review your application summary, then sign and submit.</p>
+        </div>
+      </div>
+
+      <!-- Dynamic review summary -->
+      <div class="review-grid" id="reviewSummary"></div>
+
+      <!-- Declarations -->
+      <div class="declaration-box">
+        <h3 class="decl-title">Applicant Declarations</h3>
+        <p>By submitting this application, I/we hereby declare and agree that:</p>
+        <ol class="decl-list">
+          <li>The statements and information provided in this application are <strong>true, accurate, and complete</strong> to the best of my/our knowledge.</li>
+          <li>I/we understand that any <strong>misrepresentation, omission, or concealment</strong> of material facts may result in policy cancellation, rescission, or claim denial.</li>
+          <li>Submission of this application does <strong>not bind coverage</strong>. A policy is only bound upon written confirmation from Commercial General Insurance Group.</li>
+          <li>I/we authorize CGIG and its agents to <strong>verify information</strong> provided, including loss run requests from prior insurers.</li>
+          <li>I/we have read and understand the <strong>terms of this application</strong>.</li>
+        </ol>
+
+        <div class="form-grid" style="margin-top:20px;">
+          <div class="field">
+            <label class="field-label required" for="applicant_name">Applicant Printed Name</label>
+            <input type="text" id="applicant_name" name="applicant_name" class="field-input" required />
+          </div>
+          <div class="field">
+            <label class="field-label required" for="applicant_title_sig">Title</label>
+            <input type="text" id="applicant_title_sig" name="applicant_title_sig" class="field-input" required />
+          </div>
+          <div class="field full">
+            <label class="field-label required" for="signature_date">Date</label>
+            <input type="date" id="signature_date" name="signature_date" class="field-input" style="max-width:240px;" required />
+          </div>
+          <div class="field full">
+            <label class="checkbox-label acceptance-check">
+              <input type="checkbox" id="accept_declarations" name="accept_declarations" value="accepted" required />
+              <strong>I have read, understand, and agree to the declarations above.</strong>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step-nav">
+      <button type="button" class="btn btn-outline" onclick="prevStep(5)">&larr; Previous</button>
+      <button type="submit" class="btn btn-submit" id="submitBtn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style="margin-right:6px;">
+          <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Submit Application
+      </button>
+    </div>
+  </section>
+
+</form>
+
+<footer class="footer">
+  <p>&copy; 2024 Commercial General Insurance Group &mdash; Licensed in all 50 states &middot; <a href="/" style="color:var(--brand-blue)">Customer Support Chat</a></p>
+</footer>
+
+<script src="/static/application.js"></script>
+</body>
+</html>

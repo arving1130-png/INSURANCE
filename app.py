@@ -1,5 +1,5 @@
 import os
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template, redirect, url_for
 from flask_cors import CORS
 import anthropic
 from dotenv import load_dotenv
@@ -82,6 +82,19 @@ You are here to make every interaction smooth, reassuring, and helpful. Always e
 @app.route("/")
 def index():
     return render_template("index.html")
+
+
+@app.route("/apply")
+def apply():
+    return render_template("application.html")
+
+
+@app.route("/apply/submit", methods=["POST"])
+def submit_application():
+    form = request.form.to_dict()
+    # In production this would save to a database / trigger underwriting workflow.
+    # For now we pass the data to a confirmation page.
+    return render_template("confirmation.html", form=form)
 
 
 @app.route("/chat", methods=["POST"])
