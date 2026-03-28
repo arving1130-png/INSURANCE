@@ -1,0 +1,225 @@
+{% extends "base.html" %}
+{% block title %}New Policy — CGIG{% endblock %}
+
+{% block breadcrumb %}
+  <a href="/dashboard" class="bc-item">Dashboard</a>
+  <span class="bc-sep">›</span>
+  <a href="/policies" class="bc-item">Policies</a>
+  <span class="bc-sep">›</span>
+  <span class="bc-item active">New Policy</span>
+{% endblock %}
+
+{% block content %}
+<div class="new-policy-layout">
+
+  <!-- Template selector -->
+  <div class="card tpl-picker">
+    <div class="card-header">1. Choose a Template</div>
+    <div class="tpl-grid">
+      <div class="tpl-card {% if not selected_tpl %}tpl-card-active{% endif %}" onclick="selectTemplate(0, this)">
+        <div class="tpl-type">BLANK</div>
+        <div class="tpl-name">Blank Policy</div>
+        <div class="tpl-desc">Start from scratch with no pre-filled values.</div>
+      </div>
+      {% for tpl in templates %}
+      <div class="tpl-card {% if selected_tpl and selected_tpl.id == tpl.id %}tpl-card-active{% endif %}"
+           onclick="selectTemplate({{ tpl.id }}, this)"
+           data-id="{{ tpl.id }}">
+        <div class="tpl-type">{{ tpl.policy_type }}</div>
+        <div class="tpl-name">{{ tpl.name }}</div>
+        <div class="tpl-desc">{{ tpl.description }}</div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Policy form -->
+  <div class="card">
+    <div class="card-header">2. Fill in Policy Details</div>
+    <form action="/policy/create" method="POST" class="form-grid" id="newPolicyForm">
+
+      <div class="field-group-label">Policy Info</div>
+      <div class="field">
+        <label class="field-label required">Insured Name</label>
+        <input name="insured_name" class="field-input" required
+               value="{{ selected_tpl and '' or '' }}"/>
+      </div>
+      <div class="field">
+        <label class="field-label">DBA / Trade Name</label>
+        <input name="dba" class="field-input"/>
+      </div>
+      <div class="field">
+        <label class="field-label required">Policy Type</label>
+        <select name="policy_type" id="fPolicyType" class="field-input field-select" required>
+          {% for t in ['CGL','Property','WC','Auto','BOP','Umbrella'] %}
+            <option {% if selected_tpl and selected_tpl.policy_type == t %}selected{% endif %}>{{ t }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="field">
+        <label class="field-label required">Status</label>
+        <select name="status" class="field-input field-select" required>
+          <option>Quote</option>
+          <option>Active</option>
+          <option>Pending Renewal</option>
+        </select>
+      </div>
+      <div class="field">
+        <label class="field-label">Effective Date</label>
+        <input type="date" name="effective_date" id="fEffective" class="field-input"/>
+      </div>
+      <div class="field">
+        <label class="field-label">Expiration Date</label>
+        <input type="date" name="expiration_date" id="fExpiration" class="field-input"/>
+      </div>
+      <div class="field">
+        <label class="field-label">Quote Date</label>
+        <input type="date" name="quote_date" id="fQuoteDate" class="field-input"/>
+      </div>
+
+      <div class="field-group-label">Coverage Limits</div>
+      <div class="field">
+        <label class="field-label">Per Occurrence</label>
+        <input name="per_occurrence" id="fPerOcc" class="field-input" placeholder="e.g. $1,000,000"/>
+      </div>
+      <div class="field">
+        <label class="field-label">General Aggregate</label>
+        <input name="aggregate" id="fAggregate" class="field-input" placeholder="e.g. $2,000,000"/>
+      </div>
+      <div class="field">
+        <label class="field-label">Products Aggregate</label>
+        <input name="products_agg" id="fProductsAgg" class="field-input" placeholder="e.g. $2,000,000"/>
+      </div>
+      <div class="field">
+        <label class="field-label">Deductible</label>
+        <input name="deductible" id="fDeductible" class="field-input" placeholder="e.g. None or $1,000"/>
+      </div>
+
+      <div class="field-group-label">Financials</div>
+      <div class="field">
+        <label class="field-label">Annual Premium ($)</label>
+        <input type="number" name="premium" class="field-input" step="0.01" placeholder="0.00"/>
+      </div>
+      <div class="field">
+        <label class="field-label">Commission Rate (%)</label>
+        <input type="number" name="commission_rate" id="fCommRate" class="field-input" step="0.1" placeholder="10"/>
+      </div>
+
+      <div class="field-group-label">Insured Business</div>
+      <div class="field">
+        <label class="field-label">Entity Type</label>
+        <select name="entity_type" class="field-input field-select">
+          <option value="">— Select —</option>
+          <option>Sole Proprietorship</option><option>Partnership</option>
+          <option>LLC</option><option>S-Corporation</option>
+          <option>C-Corporation</option><option>Non-Profit / 501(c)(3)</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="field">
+        <label class="field-label">Industry</label>
+        <input name="industry" class="field-input" placeholder="e.g. General Contractor"/>
+      </div>
+      <div class="field">
+        <label class="field-label">Full-Time Employees</label>
+        <input type="number" name="employees" class="field-input" min="0" placeholder="0"/>
+      </div>
+      <div class="field">
+        <label class="field-label">Annual Revenue</label>
+        <select name="annual_revenue" class="field-input field-select">
+          <option value="">— Select —</option>
+          <option>Under $100,000</option>
+          <option>$100,000 – $250,000</option>
+          <option>$250,001 – $500,000</option>
+          <option>$500,001 – $1,000,000</option>
+          <option>$1,000,001 – $2,500,000</option>
+          <option>$2,500,001 – $5,000,000</option>
+          <option>$5,000,001 – $10,000,000</option>
+          <option>Over $10,000,000</option>
+        </select>
+      </div>
+
+      <div class="field-group-label">Contact Information</div>
+      <div class="field">
+        <label class="field-label">Contact Name</label>
+        <input name="contact_name" class="field-input"/>
+      </div>
+      <div class="field">
+        <label class="field-label">Contact Email</label>
+        <input type="email" name="contact_email" class="field-input"/>
+      </div>
+      <div class="field">
+        <label class="field-label">Contact Phone</label>
+        <input name="contact_phone" class="field-input"/>
+      </div>
+      <div class="field">
+        <label class="field-label">Street Address</label>
+        <input name="street" class="field-input"/>
+      </div>
+      <div class="field">
+        <label class="field-label">City</label>
+        <input name="city" class="field-input"/>
+      </div>
+      <div class="field half">
+        <label class="field-label">State</label>
+        <input name="state" class="field-input" maxlength="2" placeholder="CT"/>
+      </div>
+      <div class="field half">
+        <label class="field-label">ZIP</label>
+        <input name="zip" class="field-input" maxlength="10"/>
+      </div>
+
+      <div class="field-group-label">Staff & Notes</div>
+      <div class="field">
+        <label class="field-label">Assigned Agent</label>
+        <input name="agent_name" class="field-input" placeholder="Agent name"/>
+      </div>
+      <div class="field">
+        <label class="field-label">Underwriter</label>
+        <input name="underwriter" class="field-input" placeholder="Underwriter name"/>
+      </div>
+      <div class="field full">
+        <label class="field-label">Notes</label>
+        <textarea name="notes" class="field-input field-textarea" rows="3" placeholder="Internal notes…"></textarea>
+      </div>
+
+      <div class="field full edit-form-footer" style="border-top:1px solid var(--border);padding-top:20px;margin-top:8px;">
+        <a href="/policies" class="btn btn-outline">Cancel</a>
+        <button type="submit" class="btn btn-primary">Create Policy</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const TODAY = new Date().toISOString().split('T')[0];
+document.getElementById('fQuoteDate').value = TODAY;
+
+// Set effective +1 day, expiration +1 year by default
+const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate()+1);
+const nextYear  = new Date(); nextYear.setFullYear(nextYear.getFullYear()+1);
+document.getElementById('fEffective').value  = tomorrow.toISOString().split('T')[0];
+document.getElementById('fExpiration').value = nextYear.toISOString().split('T')[0];
+
+function selectTemplate(id, el) {
+  document.querySelectorAll('.tpl-card').forEach(c => c.classList.remove('tpl-card-active'));
+  el.classList.add('tpl-card-active');
+  if (!id) return;  // blank — clear nothing
+  fetch(`/api/template/${id}`)
+    .then(r => r.json())
+    .then(data => {
+      const d = data.defaults || {};
+      if (d.per_occurrence)  document.getElementById('fPerOcc').value     = d.per_occurrence;
+      if (d.aggregate)       document.getElementById('fAggregate').value  = d.aggregate;
+      if (d.products_agg)    document.getElementById('fProductsAgg').value= d.products_agg;
+      if (d.deductible)      document.getElementById('fDeductible').value  = d.deductible;
+      if (d.commission_rate) document.getElementById('fCommRate').value    = d.commission_rate;
+      // Set policy type from template
+      const sel = document.getElementById('fPolicyType');
+      if (data.template && data.template.policy_type) sel.value = data.template.policy_type;
+    });
+}
+</script>
+{% endblock %}

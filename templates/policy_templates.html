@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+{% block title %}Policy Templates — CGIG{% endblock %}
+
+{% block breadcrumb %}
+  <a href="/dashboard" class="bc-item">Dashboard</a>
+  <span class="bc-sep">›</span>
+  <span class="bc-item active">Templates</span>
+{% endblock %}
+
+{% block topbar_actions %}
+  <button class="tbtn tbtn-primary" onclick="openModal('newTplModal')">+ New Template</button>
+{% endblock %}
+
+{% block content %}
+
+<!-- Filter bar -->
+<div class="filter-bar">
+  <form method="GET" action="/templates" class="filter-form">
+    <select name="type" class="filter-select">
+      <option value="">All Types</option>
+      {% for t in ['CGL','Property','WC','Auto','BOP','Umbrella'] %}
+        <option {% if type_filter == t %}selected{% endif %}>{{ t }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit" class="tbtn tbtn-primary">Filter</button>
+    {% if type_filter %}<a href="/templates" class="tbtn tbtn-ghost">Clear</a>{% endif %}
+  </form>
+  <div class="result-count">{{ templates|length }} template{{ 's' if templates|length != 1 }}</div>
+</div>
+
+<!-- Template cards -->
+<div class="tpl-list-grid">
+  {% for tpl in templates %}
+  <div class="tpl-list-card">
+    <div class="tpl-list-card-top">
+      <div>
+        <div class="tpl-list-type">{{ tpl.policy_type }}</div>
+        <div class="tpl-list-name">{{ tpl.name }}</div>
+        <div class="tpl-list-desc">{{ tpl.description }}</div>
+      </div>
+      <div class="tpl-list-actions">
+        <a href="/policy/new?template={{ tpl.id }}" class="tbtn tbtn-primary tbtn-sm">Use</a>
+        <button class="tbtn tbtn-outline tbtn-sm" onclick="editTemplate({{ tpl.id }}, {{ tpl | tojson }})">Edit</button>
+        <form action="/templates/{{ tpl.id }}/delete" method="POST" class="inline-form"
+              onsubmit="return confirm('Delete template \'{{ tpl.name }}\'?')">
+          <button type="submit" class="tbtn tbtn-danger tbtn-sm">Delete</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Defaults display -->
+    {% set defaults = tpl.defaults | fromjson %}
+    {% if defaults %}
+    <div class="tpl-defaults">
+      {% for k, v in defaults.items() %}
+        <div class="tpl-default-row">
+          <span>{{ k | replace('_', ' ') | title }}</span>
+          <strong>{{ v }}</strong>
+        </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="tpl-list-footer">
+      Updated {{ tpl.updated_at[:10] }}
+    </div>
+  </div>
+  {% else %}
+  <div class="empty-state" style="grid-column:1/-1">
+    <p>No templates yet. Create your first template to speed up policy creation.</p>
+    <button class="tbtn tbtn-primary" onclick="openModal('newTplModal')" style="margin-top:12px">+ Create Template</button>
+  </div>
+  {% endfor %}
+</div>
+
+
+<!-- New Template Modal -->
+<div class="modal-overlay" id="newTplModal">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <h3>New Policy Template</h3>
+      <button class="modal-close" onclick="closeModal('newTplModal')">✕</button>
+    </div>
+    <form action="/templates/create" method="POST" class="modal-form">
+      <div class="form-grid" style="padding:0;gap:14px;">
+        <div class="field">
+          <label class="field-label required">Template Name</label>
+          <input name="name" class="field-input" required placeholder="e.g. CGL Contractor Standard"/>
+        </div>
+        <div class="field">
+          <label class="field-label required">Policy Type</label>
+          <select name="policy_type" class="field-input field-select" required>
+            <option>CGL</option><option>Property</option><option>WC</option>
+            <option>Auto</option><option>BOP</option><option>Umbrella</option>
+          </select>
+        </div>
+        <div class="field full">
+          <label class="field-label">Description</label>
+          <textarea name="description" class="field-input field-textarea" rows="2"
+                    placeholder="Brief description of when to use this template…"></textarea>
+        </div>
+        <div class="field full">
+          <label class="field-label">Default Values (JSON)</label>
+          <textarea name="defaults" class="field-input field-textarea field-mono" rows="6"
+                    placeholder='{"per_occurrence": "$1,000,000", "aggregate": "$2,000,000", "deductible": "None", "commission_rate": 10}'></textarea>
+          <p class="field-hint">Valid JSON with default field values. Keys: per_occurrence, aggregate, products_agg, deductible, commission_rate</p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" onclick="closeModal('newTplModal')">Cancel</button>
+        <button type="submit" class="btn btn-primary">Create Template</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+<!-- Edit Template Modal -->
+<div class="modal-overlay" id="editTplModal">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <h3>Edit Template</h3>
+      <button class="modal-close" onclick="closeModal('editTplModal')">✕</button>
+    </div>
+    <form id="editTplForm" method="POST" class="modal-form">
+      <div class="form-grid" style="padding:0;gap:14px;">
+        <div class="field">
+          <label class="field-label">Template Name</label>
+          <input name="name" id="etName" class="field-input"/>
+        </div>
+        <div class="field">
+          <label class="field-label">Policy Type</label>
+          <select name="policy_type" id="etType" class="field-input field-select">
+            <option>CGL</option><option>Property</option><option>WC</option>
+            <option>Auto</option><option>BOP</option><option>Umbrella</option>
+          </select>
+        </div>
+        <div class="field full">
+          <label class="field-label">Description</label>
+          <textarea name="description" id="etDesc" class="field-input field-textarea" rows="2"></textarea>
+        </div>
+        <div class="field full">
+          <label class="field-label">Default Values (JSON)</label>
+          <textarea name="defaults" id="etDefaults" class="field-input field-textarea field-mono" rows="6"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" onclick="closeModal('editTplModal')">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+function editTemplate(id, tpl) {
+  document.getElementById('editTplForm').action = `/templates/${id}/edit`;
+  document.getElementById('etName').value     = tpl.name || '';
+  document.getElementById('etType').value     = tpl.policy_type || 'CGL';
+  document.getElementById('etDesc').value     = tpl.description || '';
+  document.getElementById('etDefaults').value = tpl.defaults || '{}';
+  openModal('editTplModal');
+}
+</script>
+{% endblock %}

@@ -1,0 +1,219 @@
+{% extends "base.html" %}
+{% block title %}{{ policy.insured_name }} — CGIG{% endblock %}
+
+{% block breadcrumb %}
+  <a href="/dashboard" class="bc-item">Dashboard</a>
+  <span class="bc-sep">›</span>
+  <a href="/policies" class="bc-item">Policies</a>
+  <span class="bc-sep">›</span>
+  <span class="bc-item active">{{ policy.policy_number }}</span>
+{% endblock %}
+
+{% block topbar_actions %}
+  <button class="tbtn tbtn-outline" onclick="toggleEdit()">✏ Edit Policy</button>
+  <button class="tbtn tbtn-ai" onclick="runAIReview({{ policy.id }})" id="aiBtn">
+    ✦ AI Review
+  </button>
+{% endblock %}
+
+{% block content %}
+<div class="detail-grid">
+
+  <!-- LEFT COLUMN: Policy data -->
+  <div class="detail-main">
+
+    <!-- Policy header -->
+    <div class="card detail-header-card">
+      <div class="detail-header">
+        <div>
+          <h1 class="detail-name">{{ policy.insured_name }}</h1>
+          {% if policy.dba %}<div class="detail-dba">DBA: {{ policy.dba }}</div>{% endif %}
+          <div class="detail-meta-row">
+            <span class="mono">{{ policy.policy_number }}</span>
+            <span class="status-badge status-{{ policy.status|lower|replace(' ', '-') }} status-lg">{{ policy.status }}</span>
+            <span class="type-badge">{{ policy.policy_type }}</span>
+          </div>
+        </div>
+        <div class="detail-premium-box">
+          <div class="detail-premium-val">${{ "{:,.0f}".format(policy.premium or 0) }}</div>
+          <div class="detail-premium-label">Annual Premium</div>
+          <div class="detail-premium-comm">{{ policy.commission_rate or 0 }}% commission</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Edit form (hidden by default) -->
+    <form action="/policy/{{ policy.id }}/edit" method="POST" id="editForm" class="card edit-form" style="display:none">
+      <div class="card-header">Edit Policy</div>
+      <div class="form-grid">
+        <div class="field"><label class="field-label">Insured Name</label>
+          <input name="insured_name" value="{{ policy.insured_name }}" class="field-input"/></div>
+        <div class="field"><label class="field-label">DBA</label>
+          <input name="dba" value="{{ policy.dba or '' }}" class="field-input"/></div>
+        <div class="field"><label class="field-label">Policy Type</label>
+          <select name="policy_type" class="field-input field-select">
+            {% for t in ['CGL','Property','WC','Auto','BOP','Umbrella'] %}
+              <option {% if policy.policy_type == t %}selected{% endif %}>{{ t }}</option>
+            {% endfor %}
+          </select></div>
+        <div class="field"><label class="field-label">Status</label>
+          <select name="status" class="field-input field-select">
+            {% for s in ['Quote','Active','Pending Renewal','Expired','Cancelled'] %}
+              <option {% if policy.status == s %}selected{% endif %}>{{ s }}</option>
+            {% endfor %}
+          </select></div>
+        <div class="field"><label class="field-label">Effective Date</label>
+          <input type="date" name="effective_date" value="{{ policy.effective_date or '' }}" class="field-input"/></div>
+        <div class="field"><label class="field-label">Expiration Date</label>
+          <input type="date" name="expiration_date" value="{{ policy.expiration_date or '' }}" class="field-input"/></div>
+        <div class="field"><label class="field-label">Premium ($)</label>
+          <input type="number" name="premium" value="{{ policy.premium or '' }}" step="0.01" class="field-input"/></div>
+        <div class="field"><label class="field-label">Commission (%)</label>
+          <input type="number" name="commission_rate" value="{{ policy.commission_rate or '' }}" step="0.1" class="field-input"/></div>
+        <div class="field"><label class="field-label">Per Occurrence</label>
+          <input name="per_occurrence" value="{{ policy.per_occurrence or '' }}" class="field-input"/></div>
+        <div class="field"><label class="field-label">General Aggregate</label>
+          <input name="aggregate" value="{{ policy.aggregate or '' }}" class="field-input"/></div>
+        <div class="field"><label class="field-label">Products Aggregate</label>
+          <input name="products_agg" value="{{ policy.products_agg or '' }}" class="field-input"/></div>
+        <div class="field"><label class="field-label">Deductible</label>
+          <input name="deductible" value="{{ policy.deductible or '' }}" class="field-input"/></div>
+        <div class="field"><label class="field-label">Agent</label>
+          <input name="agent_name" value="{{ policy.agent_name or '' }}" class="field-input"/></div>
+        <div class="field"><label class="field-label">Underwriter</label>
+          <input name="underwriter" value="{{ policy.underwriter or '' }}" class="field-input"/></div>
+        <div class="field"><label class="field-label">Contact Name</label>
+          <input name="contact_name" value="{{ policy.contact_name or '' }}" class="field-input"/></div>
+        <div class="field"><label class="field-label">Contact Email</label>
+          <input name="contact_email" value="{{ policy.contact_email or '' }}" class="field-input"/></div>
+        <div class="field"><label class="field-label">Contact Phone</label>
+          <input name="contact_phone" value="{{ policy.contact_phone or '' }}" class="field-input"/></div>
+        <div class="field"><label class="field-label">Industry</label>
+          <input name="industry" value="{{ policy.industry or '' }}" class="field-input"/></div>
+        <div class="field"><label class="field-label">Employees</label>
+          <input type="number" name="employees" value="{{ policy.employees or '' }}" class="field-input"/></div>
+        <div class="field full"><label class="field-label">Notes</label>
+          <textarea name="notes" class="field-input field-textarea" rows="3">{{ policy.notes or '' }}</textarea></div>
+      </div>
+      <div class="edit-form-footer">
+        <button type="button" class="btn btn-outline" onclick="toggleEdit()">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+      </div>
+    </form>
+
+    <!-- Info sections -->
+    <div class="info-sections">
+
+      <div class="info-section card">
+        <div class="info-section-title">Coverage</div>
+        <div class="info-grid">
+          <div class="info-row"><span>Per Occurrence</span><strong>{{ policy.per_occurrence or '—' }}</strong></div>
+          <div class="info-row"><span>General Aggregate</span><strong>{{ policy.aggregate or '—' }}</strong></div>
+          <div class="info-row"><span>Products Agg.</span><strong>{{ policy.products_agg or '—' }}</strong></div>
+          <div class="info-row"><span>Deductible</span><strong>{{ policy.deductible or '—' }}</strong></div>
+          <div class="info-row"><span>Effective</span><strong>{{ policy.effective_date or '—' }}</strong></div>
+          <div class="info-row"><span>Expiration</span><strong>{{ policy.expiration_date or '—' }}</strong></div>
+          <div class="info-row"><span>Bound</span><strong>{{ policy.bound_date or '—' }}</strong></div>
+          <div class="info-row"><span>Commission</span><strong>{{ policy.commission_rate or 0 }}%</strong></div>
+        </div>
+      </div>
+
+      <div class="info-section card">
+        <div class="info-section-title">Insured Business</div>
+        <div class="info-grid">
+          <div class="info-row"><span>Entity Type</span><strong>{{ policy.entity_type or '—' }}</strong></div>
+          <div class="info-row"><span>Industry</span><strong>{{ policy.industry or '—' }}</strong></div>
+          <div class="info-row"><span>Employees</span><strong>{{ policy.employees or '—' }}</strong></div>
+          <div class="info-row"><span>Annual Revenue</span><strong>{{ policy.annual_revenue or '—' }}</strong></div>
+          <div class="info-row"><span>Address</span><strong>{{ policy.street or '—' }}{% if policy.city %}, {{ policy.city }}, {{ policy.state }} {{ policy.zip }}{% endif %}</strong></div>
+        </div>
+      </div>
+
+      <div class="info-section card">
+        <div class="info-section-title">Contact & Staff</div>
+        <div class="info-grid">
+          <div class="info-row"><span>Contact</span><strong>{{ policy.contact_name or '—' }}</strong></div>
+          <div class="info-row"><span>Email</span><strong>{{ policy.contact_email or '—' }}</strong></div>
+          <div class="info-row"><span>Phone</span><strong>{{ policy.contact_phone or '—' }}</strong></div>
+          <div class="info-row"><span>Agent</span><strong>{{ policy.agent_name or '—' }}</strong></div>
+          <div class="info-row"><span>Underwriter</span><strong>{{ policy.underwriter or '—' }}</strong></div>
+        </div>
+      </div>
+
+      {% if policy.notes %}
+      <div class="info-section card">
+        <div class="info-section-title">Notes</div>
+        <p class="notes-text">{{ policy.notes }}</p>
+      </div>
+      {% endif %}
+
+    </div><!-- /info-sections -->
+  </div><!-- /detail-main -->
+
+  <!-- RIGHT COLUMN: Tasks + AI Review -->
+  <div class="detail-side">
+
+    <!-- AI Review panel -->
+    <div class="card" id="aiPanel">
+      <div class="card-header ai-header">
+        <span>✦ AI Policy Review</span>
+        {% if reviews %}
+          <span class="review-count">{{ reviews|length }} review{{ 's' if reviews|length != 1 }}</span>
+        {% endif %}
+      </div>
+      <div class="ai-desc">Claude analyzes this policy for errors, missing fields, coverage gaps, and inconsistencies.</div>
+      <button class="btn btn-ai-full" onclick="runAIReview({{ policy.id }})" id="aiPanelBtn">
+        Run AI Review
+      </button>
+      <div id="aiResults"></div>
+      {% if reviews %}
+        <div class="review-history">
+          <div class="review-history-title">Previous Reviews</div>
+          {% for r in reviews[:3] %}
+            <div class="review-hist-item sev-{{ r.severity }}">
+              <span>{{ r.created_at[:16] }}</span>
+              <span>{{ r.issues_count }} issue{{ 's' if r.issues_count != 1 }}</span>
+              <span class="sev-badge sev-{{ r.severity }}">{{ r.severity }}</span>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Policy Tasks -->
+    <div class="card">
+      <div class="card-header">
+        <span>Tasks for This Policy</span>
+        <a href="/tasks" class="card-header-link">+ Add Task</a>
+      </div>
+      {% if tasks %}
+        <ul class="task-list">
+          {% for task in tasks %}
+          <li class="task-item {% if task.status == 'Completed' %}task-done{% endif %}">
+            <div class="task-check">
+              <button class="check-btn {% if task.status == 'Completed' %}checked{% endif %}"
+                      onclick="completeTask({{ task.id }}, this)">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                  <path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+            </div>
+            <div class="task-body">
+              <div class="task-title {{ 'done' if task.status == 'Completed' }}">{{ task.title }}</div>
+              <div class="task-meta">Due {{ task.due_date or 'No date' }} · {{ task.priority }}</div>
+            </div>
+          </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <div class="empty-state-sm">No tasks linked to this policy.</div>
+      {% endif %}
+    </div>
+
+  </div><!-- /detail-side -->
+</div><!-- /detail-grid -->
+
+<script>
+const POLICY_ID = {{ policy.id }};
+</script>
+{% endblock %}

@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block title %}Policies — CGIG{% endblock %}
+
+{% block breadcrumb %}
+  <a href="/dashboard" class="bc-item">Dashboard</a>
+  <span class="bc-sep">›</span>
+  <span class="bc-item active">Policies</span>
+{% endblock %}
+
+{% block topbar_actions %}
+  <a href="/policy/new" class="tbtn tbtn-primary">+ New Policy</a>
+{% endblock %}
+
+{% block content %}
+
+<!-- Filter bar -->
+<div class="filter-bar">
+  <form method="GET" action="/policies" class="filter-form">
+    <input type="text" name="q" value="{{ search }}" class="filter-input" placeholder="Search insured, policy #, contact…"/>
+    <select name="status" class="filter-select">
+      <option value="">All Statuses</option>
+      {% for s in ['Active','Quote','Pending Renewal','Expired','Cancelled'] %}
+        <option {% if status_filter == s %}selected{% endif %}>{{ s }}</option>
+      {% endfor %}
+    </select>
+    <select name="type" class="filter-select">
+      <option value="">All Types</option>
+      {% for t in ['CGL','Property','WC','Auto','BOP','Umbrella'] %}
+        <option {% if type_filter == t %}selected{% endif %}>{{ t }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit" class="tbtn tbtn-primary">Search</button>
+    {% if search or status_filter or type_filter %}
+      <a href="/policies" class="tbtn tbtn-ghost">Clear</a>
+    {% endif %}
+  </form>
+  <div class="result-count">{{ policies|length }} polic{{ 'y' if policies|length == 1 else 'ies' }}</div>
+</div>
+
+<!-- Table -->
+<div class="card">
+  {% if policies %}
+  <div class="table-wrap">
+    <table class="mgmt-table">
+      <thead>
+        <tr>
+          <th>Policy #</th>
+          <th>Insured</th>
+          <th>Type</th>
+          <th>Status</th>
+          <th>Effective</th>
+          <th>Expiration</th>
+          <th>Premium</th>
+          <th>Agent</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in policies %}
+        <tr class="tbl-row-hover">
+          <td class="mono">{{ p.policy_number }}</td>
+          <td>
+            <strong>{{ p.insured_name }}</strong>
+            {% if p.dba %}<br/><span class="text-muted-sm">{{ p.dba }}</span>{% endif %}
+          </td>
+          <td>{{ p.policy_type }}</td>
+          <td><span class="status-badge status-{{ p.status|lower|replace(' ', '-') }}">{{ p.status }}</span></td>
+          <td>{{ p.effective_date or '—' }}</td>
+          <td>{{ p.expiration_date or '—' }}</td>
+          <td>${{ "{:,.0f}".format(p.premium or 0) }}</td>
+          <td>{{ p.agent_name or '—' }}</td>
+          <td class="tbl-actions">
+            <a href="/policy/{{ p.id }}" class="tbl-link">View</a>
+            <form action="/policy/{{ p.id }}/delete" method="POST" class="inline-form"
+                  onsubmit="return confirm('Delete {{ p.insured_name }}? This cannot be undone.')">
+              <button type="submit" class="tbl-del">Delete</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" style="opacity:.3;margin-bottom:12px">
+      <path d="M9 12h6m-6 4h6M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" stroke="currentColor" stroke-width="1.5"/>
+    </svg>
+    <p>No policies found{% if search %} matching "{{ search }}"{% endif %}.</p>
+    <a href="/policy/new" class="tbtn tbtn-primary" style="margin-top:12px">Create First Policy</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

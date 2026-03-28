@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+{% block title %}Tasks — CGIG{% endblock %}
+
+{% block breadcrumb %}
+  <a href="/dashboard" class="bc-item">Dashboard</a>
+  <span class="bc-sep">›</span>
+  <span class="bc-item active">Tasks</span>
+{% endblock %}
+
+{% block topbar_actions %}
+  <button class="tbtn tbtn-primary" onclick="openModal('addTaskModal')">+ New Task</button>
+{% endblock %}
+
+{% block content %}
+
+<!-- Filters -->
+<div class="filter-bar">
+  <form method="GET" action="/tasks" class="filter-form">
+    <select name="status" class="filter-select">
+      <option value="">All Statuses</option>
+      {% for s in ['Pending','In Progress','Completed'] %}
+        <option {% if status_filter == s %}selected{% endif %}>{{ s }}</option>
+      {% endfor %}
+    </select>
+    <select name="priority" class="filter-select">
+      <option value="">All Priorities</option>
+      {% for p in ['High','Medium','Low'] %}
+        <option {% if priority_filter == p %}selected{% endif %}>{{ p }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit" class="tbtn tbtn-primary">Filter</button>
+    {% if status_filter or priority_filter %}
+      <a href="/tasks" class="tbtn tbtn-ghost">Clear</a>
+    {% endif %}
+  </form>
+  <div class="result-count">{{ tasks|length }} task{{ 's' if tasks|length != 1 }}</div>
+</div>
+
+<!-- Kanban-style sections -->
+{% set pending_tasks   = tasks | selectattr('status', 'equalto', 'Pending')     | list %}
+{% set progress_tasks  = tasks | selectattr('status', 'equalto', 'In Progress') | list %}
+{% set done_tasks      = tasks | selectattr('status', 'equalto', 'Completed')   | list %}
+
+<div class="tasks-board">
+
+  <!-- Pending -->
+  <div class="task-col">
+    <div class="task-col-header task-col-pending">
+      <span>Pending</span>
+      <span class="task-col-count">{{ pending_tasks|length }}</span>
+    </div>
+    {% for task in pending_tasks %}
+      {{ _render_task(task) }}
+    {% else %}
+      <div class="task-empty">No pending tasks</div>
+    {% endfor %}
+  </div>
+
+  <!-- In Progress -->
+  <div class="task-col">
+    <div class="task-col-header task-col-inprogress">
+      <span>In Progress</span>
+      <span class="task-col-count">{{ progress_tasks|length }}</span>
+    </div>
+    {% for task in progress_tasks %}
+      {{ _render_task(task) }}
+    {% else %}
+      <div class="task-empty">Nothing in progress</div>
+    {% endfor %}
+  </div>
+
+  <!-- Completed -->
+  <div class="task-col">
+    <div class="task-col-header task-col-done">
+      <span>Completed</span>
+      <span class="task-col-count">{{ done_tasks|length }}</span>
+    </div>
+    {% for task in done_tasks %}
+      {{ _render_task(task) }}
+    {% else %}
+      <div class="task-empty">No completed tasks</div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- Macro to render a task card -->
+{% macro _render_task(task) %}
+<div class="task-card {% if task.status == 'Completed' %}task-card-done{% endif %}" id="taskcard-{{ task.id }}">
+  <div class="task-card-top">
+    <span class="priority-dot priority-{{ task.priority|lower }}"></span>
+    <span class="task-type-tag">{{ task.task_type }}</span>
+    <div class="task-card-actions">
+      {% if task.status != 'Completed' %}
+        <form action="/tasks/{{ task.id }}/status" method="POST" class="inline-form">
+          <input type="hidden" name="status" value="Completed"/>
+          <button type="submit" class="tbl-link" title="Mark complete">✓</button>
+        </form>
+      {% endif %}
+      <form action="/tasks/{{ task.id }}/delete" method="POST" class="inline-form"
+            onsubmit="return confirm('Delete this task?')">
+        <button type="submit" class="tbl-del" title="Delete">✕</button>
+      </form>
+    </div>
+  </div>
+  <div class="task-card-title {% if task.status == 'Completed' %}done{% endif %}">{{ task.title }}</div>
+  {% if task.description %}
+    <div class="task-card-desc">{{ task.description[:120] }}{% if task.description|length > 120 %}…{% endif %}</div>
+  {% endif %}
+  <div class="task-card-footer">
+    {% if task.insured_name %}
+      <a href="/policy/{{ task.policy_id }}" class="task-policy-link">{{ task.insured_name }}</a>
+    {% endif %}
+    <div class="task-meta-right">
+      {% if task.due_date %}
+        <span class="task-due {% if task.due_date < today_str and task.status != 'Completed' %}task-overdue{% endif %}">
+          {{ task.due_date }}
+        </span>
+      {% endif %}
+      <span class="task-assigned">{{ task.assigned_to }}</span>
+    </div>
+  </div>
+  {% if task.status != 'Completed' %}
+  <div class="task-status-row">
+    <form action="/tasks/{{ task.id }}/status" method="POST" class="inline-form">
+      <select name="status" class="task-status-sel" onchange="this.form.submit()">
+        <option {% if task.status == 'Pending' %}selected{% endif %}>Pending</option>
+        <option {% if task.status == 'In Progress' %}selected{% endif %}>In Progress</option>
+        <option {% if task.status == 'Completed' %}selected{% endif %}>Completed</option>
+      </select>
+    </form>
+  </div>
+  {% endif %}
+</div>
+{% endmacro %}
+
+
+<!-- Add Task Modal -->
+<div class="modal-overlay" id="addTaskModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>New Task</h3>
+      <button class="modal-close" onclick="closeModal('addTaskModal')">✕</button>
+    </div>
+    <form action="/tasks/create" method="POST" class="modal-form">
+      <div class="field">
+        <label class="field-label required">Title</label>
+        <input name="title" class="field-input" required placeholder="Task title…"/>
+      </div>
+      <div class="field">
+        <label class="field-label">Description</label>
+        <textarea name="description" class="field-input field-textarea" rows="3" placeholder="Details…"></textarea>
+      </div>
+      <div class="form-grid" style="padding:0;gap:12px;">
+        <div class="field">
+          <label class="field-label">Type</label>
+          <select name="task_type" class="field-input field-select">
+            <option>General</option><option>Renewal</option><option>Certificate</option>
+            <option>Claims</option><option>Endorsement</option><option>Billing</option>
+            <option>Sales</option><option>Admin</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="field-label">Priority</label>
+          <select name="priority" class="field-input field-select">
+            <option>High</option><option selected>Medium</option><option>Low</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="field-label">Due Date</label>
+          <input type="date" name="due_date" class="field-input"/>
+        </div>
+        <div class="field">
+          <label class="field-label">Assigned To</label>
+          <input name="assigned_to" class="field-input" placeholder="Name"/>
+        </div>
+        <div class="field full">
+          <label class="field-label">Linked Policy (optional)</label>
+          <select name="policy_id" class="field-input field-select">
+            <option value="">— None —</option>
+            {% for p in policies %}
+              <option value="{{ p.id }}">{{ p.insured_name }} ({{ p.policy_number }})</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" onclick="closeModal('addTaskModal')">Cancel</button>
+        <button type="submit" class="btn btn-primary">Create Task</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+const today_str = "{{ today_str if today_str is defined else '' }}";
+</script>
+{% endblock %}
