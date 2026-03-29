@@ -1,10 +1,12 @@
 import os
 import json
+import tempfile
 from flask import Flask, request, jsonify, render_template, redirect, url_for, flash, send_file
 from flask_cors import CORS
 import anthropic
 from dotenv import load_dotenv
 import db as database
+from generate_pdf import build_pdf
 
 load_dotenv()
 
@@ -150,8 +152,15 @@ def apply():
 
 @app.route("/apply/download-form")
 def download_form():
-    pdf_path = os.path.join(os.path.dirname(__file__), "CGL_Application_CGIG.pdf")
-    return send_file(pdf_path, as_attachment=True, download_name="CGIG_CGL_Application.pdf")
+    tmp = tempfile.NamedTemporaryFile(suffix=".pdf", delete=False)
+    tmp.close()
+    build_pdf(tmp.name)
+    return send_file(
+        tmp.name,
+        as_attachment=True,
+        download_name="CGIG_CGL_Application_Fillable.pdf",
+        mimetype="application/pdf",
+    )
 
 
 @app.route("/apply/submit", methods=["POST"])
