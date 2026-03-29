@@ -1,6 +1,6 @@
 import os
 import json
-from flask import Flask, request, jsonify, render_template, redirect, url_for, flash
+from flask import Flask, request, jsonify, render_template, redirect, url_for, flash, send_file
 from flask_cors import CORS
 import anthropic
 from dotenv import load_dotenv
@@ -146,6 +146,12 @@ def chat():
 @app.route("/apply")
 def apply():
     return render_template("application.html")
+
+
+@app.route("/apply/download-form")
+def download_form():
+    pdf_path = os.path.join(os.path.dirname(__file__), "CGL_Application_CGIG.pdf")
+    return send_file(pdf_path, as_attachment=True, download_name="CGIG_CGL_Application.pdf")
 
 
 @app.route("/apply/submit", methods=["POST"])
